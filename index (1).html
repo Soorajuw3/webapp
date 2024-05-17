@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            transition: background-color 0.5s ease;
+        }
+        .chat-container {
+            width: 400px;
+            max-width: 100%;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            background-color: #075E54;
+            color: white;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-header .status {
+            font-size: 0.8em;
+            color: #d3d3d3;
+        }
+        .chat-header .clear-button {
+            background-color: #d9534f;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .chat-messages .message-container {
+            margin-bottom: 15px;
+        }
+        .chat-messages .message {
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #e5fff3; /* Lighter green for received messages */
+            max-width: 70%;
+            position: relative;
+        }
+        .chat-messages .message.sender {
+            background-color: #dcf8c6; /* WhatsApp green for sent messages */
+            align-self: flex-end;
+        }
+        .chat-messages .timestamp {
+            font-size: 0.75em;
+            color: #666;
+            text-align: right;
+            margin-top: 5px;
+        }
+        .chat-messages .blue-tick {
+            display: none;
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            font-size: 12px;
+            color: #34B7F1;
+        }
+        .chat-messages .message.sender .blue-tick {
+            display: inline;
+        }
+        .chat-messages .message img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+        .chat-input {
+            display: flex;
+            border-top: 1px solid #f0f0f0;
+            padding: 10px;
+            align-items: center;
+        }
+        .chat-input input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+        .chat-input input[type="file"] {
+            display: none;
+        }
+        .chat-input button {
+            background-color: #075E54;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin-left: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .emoji-button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        .typing-status {
+            font-size: 0.9em;
+            color: #888;
+            padding: 10px;
+            display: none;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.0/dist/emoji-button.min.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div>Chat Application</div>
+            <div class="status" id="user-status">Online</div>
+            <button class="clear-button" onclick="clearMessages()">Clear All</button>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <!-- Messages will be dynamically added here -->
+        </div>
+        <div class="typing-status" id="typing-status">User is typing...</div>
+        <div class="chat-input">
+            <button class="emoji-button" id="emoji-button">&#x1F600;</button>
+            <input type="file" id="image-input" accept="image/*" onchange="sendImage()" />
+            <input type="text" id="message-input" placeholder="Type a message..." oninput="showTypingStatus()" onblur="hideTypingStatus()" />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.0/dist/emoji-button.min.js"></script>
+    <script>
+        const messagesContainer = document.getElementById('chat-messages');
+        const userStatus = document.getElementById('user-status');
+        const input = document.getElementById('message-input');
+        const typingStatus = document.getElementById('typing-status');
+        const emojiButton = document.getElementById('emoji-button');
+        const imageInput = document.getElementById('image-input');
+
+        let isOnline = true;
+        let lastSeen = new Date();
+        let typingTimeout;
+
+        emojiButton.addEventListener('click', () => {
+            picker.togglePicker(emojiButton);
+        });
+
+        picker.on('emoji', emoji => {
+            input.value += emoji;
+        });
+
+        function sendMessage() {
+            const message = input.value.trim();
+            if (message) {
+                addMessage(message, 'sender');
+                input.value = '';
+                hideTypingStatus();
+            }
+        }
+
+        function sendImage() {
+            const file = imageInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    addMessage(`<img src="${e.target.result}" alt="Sent Image">`, 'sender');
+                }
+                reader.readAsDataURL(file);
+                hideTypingStatus();
+            }
+        }
+
+        function addMessage(content, senderClass = '') {
+            const messageContainer = document.createElement('div');
+            messageContainer.classList.add('message-container');
+
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            if (senderClass) {
+                messageElement.classList.add(senderClass);
+            }
+            messageElement.innerHTML = content;
+
+            const timestamp = document.createElement('div');
+            timestamp.classList.add('timestamp');
+            const now = new Date();
+            timestamp.textContent = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+
+            const blue
+
