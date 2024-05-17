@@ -14,7 +14,6 @@
             align-items: center;
             height: 100vh;
             background-color: #f0f0f0;
-            transition: background-color 0.5s ease;
         }
         .chat-container {
             width: 400px;
@@ -155,6 +154,7 @@
         const typingStatus = document.getElementById('typing-status');
         const emojiButton = document.getElementById('emoji-button');
         const imageInput = document.getElementById('image-input');
+        const picker = new EmojiButton();
 
         let isOnline = true;
         let lastSeen = new Date();
@@ -203,4 +203,62 @@
             const timestamp = document.createElement('div');
             timestamp.classList.add('timestamp');
             const now = new Date();
-            timestamp.textContent = `${now.toLocaleDateString
+            timestamp.textContent = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+
+            const blueTick = document.createElement('div');
+            blueTick.classList.add('blue-tick');
+            blueTick.innerHTML = '&#x2714;&#x2714;'; // Double checkmark
+
+            messageElement.appendChild(blueTick);
+            messageContainer.appendChild(messageElement);
+            messageContainer.appendChild(timestamp);
+            messagesContainer.appendChild(messageContainer);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            if (senderClass === 'sender') {
+                setTimeout(() => {
+                    messageElement.querySelector('.blue-tick').style.display = 'inline';
+                }, 2000);
+            }
+        }
+
+        function clearMessages() {
+            messagesContainer.innerHTML = '';
+        }
+
+        function updateUserStatus() {
+            if (isOnline) {
+                userStatus.textContent = 'Online';
+            } else {
+                const lastSeenTime = `${lastSeen.getHours()}:${lastSeen.getMinutes()}`;
+                userStatus.textContent = `Last seen at ${lastSeenTime}`;
+            }
+        }
+
+        function showTypingStatus() {
+            clearTimeout(typingTimeout);
+            typingStatus.style.display = 'block';
+            typingTimeout = setTimeout(hideTypingStatus, 2000);
+        }
+
+        function hideTypingStatus() {
+            typingStatus.style.display = 'none';
+        }
+
+        setTimeout(() => {
+            addMessage('Hello! This is an example of a received message.');
+        }, 1000);
+
+        setTimeout(() => {
+            isOnline = false;
+            lastSeen = new Date();
+            updateUserStatus();
+        }, 5000);
+
+        setTimeout(() => {
+            isOnline = true;
+            updateUserStatus();
+        }, 10000);
+    </script>
+</body>
+</html>
