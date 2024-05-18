@@ -41,8 +41,10 @@
       flex: 1;
       margin-left: 10px;
     }
-    #chat-header .online-status {
-      color: #25D366;
+    #chat-header .status-section {
+      display: flex;
+      flex-direction: column;
+      text-align: right;
     }
     #chat-messages {
       flex: 1;
@@ -64,16 +66,6 @@
     .message.sent {
       background-color: #DCF8C6;
       align-self: flex-end;
-    }
-    .clear-button {
-      background: none;
-      border: none;
-      color: red;
-      cursor: pointer;
-      font-size: 12px;
-      position: absolute;
-      top: 5px;
-      right: 5px;
     }
     .message .status {
       display: flex;
@@ -107,20 +99,24 @@
       border-radius: 5px;
       cursor: pointer;
     }
+    #clear-all-button {
+      margin-right: 10px;
+    }
   </style>
 </head>
 <body>
   <div id="chat-container">
     <div id="chat-header">
+      <button onclick="goHome()">Home</button>
       <img src="profile.jpg" alt="Profile Picture">
-      <div>
-        <div>User Name</div>
+      <div class="status-section">
         <div class="online-status">Online</div>
+        <div class="last-seen">Last seen: 10:30 AM</div>
       </div>
-      <div>Last seen: 10:30 AM</div>
     </div>
     <div id="chat-messages"></div>
     <div id="chat-footer">
+      <button id="clear-all-button" onclick="clearAllMessages()">Clear All</button>
       <input type="text" id="message-input" placeholder="Type a message">
       <input type="file" id="file-input" style="display:none;">
       <button onclick="sendMessage()">Send</button>
@@ -150,7 +146,6 @@
           <span>Read</span>
           <span class="blue-tick">✔✔</span>
         </div>
-        <button class="clear-button" onclick="clearMessage(this)">Clear</button>
       `;
 
       messagesContainer.appendChild(message);
@@ -169,16 +164,19 @@
             <span>Read</span>
             <span class="blue-tick">✔✔</span>
           </div>
-          <button class="clear-button" onclick="clearMessage(this)">Clear</button>
         `;
         messagesContainer.appendChild(message);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
       }
     });
 
-    function clearMessage(button) {
-      const message = button.parentElement;
-      messagesContainer.removeChild(message);
+    function clearAllMessages() {
+      messagesContainer.innerHTML = '';
+    }
+
+    function goHome() {
+      alert('Home button clicked!');
+      // Implement your home navigation logic here
     }
   </script>
 </body>
