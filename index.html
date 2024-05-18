@@ -51,15 +51,40 @@
       background-color: #e5ddd5;
     }
     .message {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 10px;
       padding: 10px;
       border-radius: 5px;
       background-color: #fff;
       max-width: 80%;
+      position: relative;
     }
     .message.sent {
       background-color: #DCF8C6;
       align-self: flex-end;
+    }
+    .clear-button {
+      background: none;
+      border: none;
+      color: red;
+      cursor: pointer;
+      font-size: 12px;
+      position: absolute;
+      top: 5px;
+      right: 5px;
+    }
+    .message .status {
+      display: flex;
+      align-items: center;
+      margin-left: 10px;
+      font-size: 12px;
+      color: #999;
+    }
+    .message .status .blue-tick {
+      color: blue;
+      margin-left: 5px;
     }
     #chat-footer {
       display: flex;
@@ -105,18 +130,31 @@
 
   <script>
     const messagesContainer = document.getElementById('chat-messages');
+    const messageInput = document.getElementById('message-input');
+
+    messageInput.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
 
     function sendMessage() {
-      const input = document.getElementById('message-input');
-      const messageText = input.value.trim();
+      const messageText = messageInput.value.trim();
       if (messageText === '') return;
 
       const message = document.createElement('div');
       message.className = 'message sent';
-      message.textContent = messageText;
+      message.innerHTML = `
+        <span>${messageText}</span>
+        <div class="status">
+          <span>Read</span>
+          <span class="blue-tick">✔✔</span>
+        </div>
+        <button class="clear-button" onclick="clearMessage(this)">Clear</button>
+      `;
 
       messagesContainer.appendChild(message);
-      input.value = '';
+      messageInput.value = '';
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
@@ -125,11 +163,23 @@
       if (file) {
         const message = document.createElement('div');
         message.className = 'message sent';
-        message.textContent = `File sent: ${file.name}`;
+        message.innerHTML = `
+          <span>File sent: ${file.name}</span>
+          <div class="status">
+            <span>Read</span>
+            <span class="blue-tick">✔✔</span>
+          </div>
+          <button class="clear-button" onclick="clearMessage(this)">Clear</button>
+        `;
         messagesContainer.appendChild(message);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
       }
     });
+
+    function clearMessage(button) {
+      const message = button.parentElement;
+      messagesContainer.removeChild(message);
+    }
   </script>
 </body>
 </html>
