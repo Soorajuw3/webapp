@@ -37,10 +37,6 @@
       width: 40px;
       height: 40px;
     }
-    #chat-header div {
-      flex: 1;
-      margin-left: 10px;
-    }
     #chat-header .status-section {
       display: flex;
       flex-direction: column;
@@ -107,7 +103,6 @@
 <body>
   <div id="chat-container">
     <div id="chat-header">
-      <button onclick="goHome()">Home</button>
       <img src="profile.jpg" alt="Profile Picture">
       <div class="status-section">
         <div class="online-status">Online</div>
@@ -172,11 +167,6 @@
 
     function clearAllMessages() {
       messagesContainer.innerHTML = '';
-    }
-
-    function goHome() {
-      alert('Home button clicked!');
-      // Implement your home navigation logic here
     }
   </script>
 </body>
