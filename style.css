@@ -1,7 +1,7 @@
 /* Add this media query at the end of your existing CSS */
 @media screen and (max-width: 600px) {
     .chat-container {
-        width: 100%;
+        width: 600%;
         border-radius: 0;
     }
 
