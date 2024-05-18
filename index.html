@@ -1,270 +1,135 @@
 <!DOCTYPE html>
-<link rel="stylesheet" href="styles.css">
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat App</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-        }
-        .chat-container {
-            width: 400px;
-            max-width: 100%;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-        }
-        .chat-header {
-            background-color: #075E54;
-            color: white;
-            padding: 15px;
-            border-radius: 8px 8px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .chat-header .status {
-            font-size: 0.8em;
-            color: #d3d3d3;
-        }
-        .chat-header .clear-button {
-            background-color: #d9534f;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-        }
-        .chat-messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .chat-messages .message-container {
-            margin-bottom: 15px;
-        }
-        .chat-messages .message {
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #e5fff3; /* Lighter green for received messages */
-            max-width: 70%;
-            position: relative;
-        }
-        .chat-messages .message.sender {
-            background-color: #dcf8c6; /* WhatsApp green for sent messages */
-            align-self: flex-end;
-        }
-        .chat-messages .timestamp {
-            font-size: 0.75em;
-            color: #666;
-            text-align: right;
-            margin-top: 5px;
-        }
-        .chat-messages .blue-tick {
-            display: none;
-            position: absolute;
-            right: 10px;
-            bottom: 10px;
-            font-size: 12px;
-            color: #34B7F1;
-        }
-        .chat-messages .message.sender .blue-tick {
-            display: inline;
-        }
-        .chat-messages .message img {
-            max-width: 100%;
-            border-radius: 5px;
-        }
-        .chat-input {
-            display: flex;
-            border-top: 1px solid #f0f0f0;
-            padding: 10px;
-            align-items: center;
-        }
-        .chat-input input[type="text"] {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            outline: none;
-        }
-        .chat-input input[type="file"] {
-            display: none;
-        }
-        .chat-input button {
-            background-color: #075E54;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            margin-left: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .emoji-button {
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            margin-right: 10px;
-        }
-        .typing-status {
-            font-size: 0.9em;
-            color: #888;
-            padding: 10px;
-            display: none;
-        }
-    </style>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.0/dist/emoji-button.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Application</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+    }
+    #chat-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 600px;
+      height: 90%;
+      background-color: #fff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    #chat-header {
+      padding: 15px;
+      background-color: #075E54;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #chat-header img {
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+    }
+    #chat-header div {
+      flex: 1;
+      margin-left: 10px;
+    }
+    #chat-header .online-status {
+      color: #25D366;
+    }
+    #chat-messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      background-color: #e5ddd5;
+    }
+    .message {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #fff;
+      max-width: 80%;
+    }
+    .message.sent {
+      background-color: #DCF8C6;
+      align-self: flex-end;
+    }
+    #chat-footer {
+      display: flex;
+      padding: 10px;
+      background-color: #fff;
+      border-top: 1px solid #ddd;
+    }
+    #chat-footer input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+    #chat-footer button {
+      padding: 10px;
+      background-color: #075E54;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <div>Chat Application</div>
-            <div class="status" id="user-status">Online</div>
-            <button class="clear-button" onclick="clearMessages()">Clear All</button>
-        </div>
-        <div class="chat-messages" id="chat-messages">
-            <!-- Messages will be dynamically added here -->
-        </div>
-        <div class="typing-status" id="typing-status">User is typing...</div>
-        <div class="chat-input">
-            <button class="emoji-button" id="emoji-button">&#x1F600;</button>
-            <input type="file" id="image-input" accept="image/*" onchange="sendImage()" />
-            <input type="text" id="message-input" placeholder="Type a message..." oninput="showTypingStatus()" onblur="hideTypingStatus()" />
-            <button onclick="sendMessage()">Send</button>
-        </div>
+  <div id="chat-container">
+    <div id="chat-header">
+      <img src="profile.jpg" alt="Profile Picture">
+      <div>
+        <div>User Name</div>
+        <div class="online-status">Online</div>
+      </div>
+      <div>Last seen: 10:30 AM</div>
     </div>
+    <div id="chat-messages"></div>
+    <div id="chat-footer">
+      <input type="text" id="message-input" placeholder="Type a message">
+      <input type="file" id="file-input" style="display:none;">
+      <button onclick="sendMessage()">Send</button>
+      <button onclick="document.getElementById('file-input').click();">📎</button>
+    </div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.0/dist/emoji-button.min.js"></script>
-    <script>
-        const messagesContainer = document.getElementById('chat-messages');
-        const userStatus = document.getElementById('user-status');
-        const input = document.getElementById('message-input');
-        const typingStatus = document.getElementById('typing-status');
-        const emojiButton = document.getElementById('emoji-button');
-        const imageInput = document.getElementById('image-input');
-        const picker = new EmojiButton();
+  <script>
+    const messagesContainer = document.getElementById('chat-messages');
 
-        let isOnline = true;
-        let lastSeen = new Date();
-        let typingTimeout;
+    function sendMessage() {
+      const input = document.getElementById('message-input');
+      const messageText = input.value.trim();
+      if (messageText === '') return;
 
-        emojiButton.addEventListener('click', () => {
-            picker.togglePicker(emojiButton);
-        });
+      const message = document.createElement('div');
+      message.className = 'message sent';
+      message.textContent = messageText;
 
-        picker.on('emoji', emoji => {
-            input.value += emoji;
-        });
+      messagesContainer.appendChild(message);
+      input.value = '';
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
 
-        
-
-
-        function sendMessage() {
-            const message = input.value.trim();
-            if (message) {
-                addMessage(message, 'sender');
-                input.value = '';
-                hideTypingStatus();
-            }
-        }
-
-        function sendImage() {
-            const file = imageInput.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    addMessage(`<img src="${e.target.result}" alt="Sent Image">`, 'sender');
-                }
-                reader.readAsDataURL(file);
-                hideTypingStatus();
-            }
-        }
-
-        function addMessage(content, senderClass = '') {
-            const messageContainer = document.createElement('div');
-            messageContainer.classList.add('message-container');
-
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('message');
-            if (senderClass) {
-                messageElement.classList.add(senderClass);
-            }
-            messageElement.innerHTML = content;
-
-            const timestamp = document.createElement('div');
-            timestamp.classList.add('timestamp');
-            const now = new Date();
-            timestamp.textContent = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
-
-            const blueTick = document.createElement('div');
-            blueTick.classList.add('blue-tick');
-            blueTick.innerHTML = '&#x2714;&#x2714;'; // Double checkmark
-
-            messageElement.appendChild(blueTick);
-            messageContainer.appendChild(messageElement);
-            messageContainer.appendChild(timestamp);
-            messagesContainer.appendChild(messageContainer);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-            if (senderClass === 'sender') {
-                setTimeout(() => {
-                    messageElement.querySelector('.blue-tick').style.display = 'inline';
-                }, 2000);
-            }
-        }
-
-        function clearMessages() {
-            messagesContainer.innerHTML = '';
-        }
-
-        function updateUserStatus() {
-            if (isOnline) {
-                userStatus.textContent = 'Online';
-            } else {
-                const lastSeenTime = `${lastSeen.getHours()}:${lastSeen.getMinutes()}`;
-                userStatus.textContent = `Last seen at ${lastSeenTime}`;
-            }
-        }
-
-        function showTypingStatus() {
-            clearTimeout(typingTimeout);
-            typingStatus.style.display = 'block';
-            typingTimeout = setTimeout(hideTypingStatus, 2000);
-        }
-
-        function hideTypingStatus() {
-            typingStatus.style.display = 'none';
-        }
-
-        setTimeout(() => {
-            addMessage('Hello! This is an example of a received message.');
-        }, 1000);
-
-        setTimeout(() => {
-            isOnline = false;
-            lastSeen = new Date();
-            updateUserStatus();
-        }, 5000);
-
-        setTimeout(() => {
-            isOnline = true;
-            updateUserStatus();
-        }, 10000);
-    </script>
+    document.getElementById('file-input').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const message = document.createElement('div');
+        message.className = 'message sent';
+        message.textContent = `File sent: ${file.name}`;
+        messagesContainer.appendChild(message);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+    });
+  </script>
 </body>
 </html>
-
-
